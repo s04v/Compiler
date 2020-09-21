@@ -54,10 +54,15 @@ void Lexer::expect(char c) {
 }
 
 void Lexer::init_keywords() {
-	keywords_map["var"] = VAR_KEY;
+	keywords_map["let"] = LET_KEY;
+	keywords_map["const"] = CONST_KEY;
+	keywords_map["static"] = STATIC_KEY;
+	keywords_map["struct"] = STRUCT_KEY;
 	keywords_map["func"] = FUNC_KEY;
 	keywords_map["if"] = IF_KEY;
+	keywords_map["else"] = ELSE_KEY;
 
+	
 }
 
 
