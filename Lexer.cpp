@@ -156,7 +156,7 @@ Token Lexer::next_token() {
 		// stream++;
 		exit(1);
 	}
-
+	tokens.push_back(tok);
 	return tok;
 }
 
@@ -170,6 +170,7 @@ char* Lexer::scan_number() {
 	}
 	return buf;
 }
+
 char* Lexer::scan_hex() {
 	char* buf = new char[20];
 	memset(buf, 0, 20);

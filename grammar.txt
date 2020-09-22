@@ -3,7 +3,8 @@ import ::= "import" <string>
 stmt0 ::=	function |
 			struct |
 			
-stmt1 ::=   var_assign | // bar = 10;
+stmt1 ::=   expression;
+			var_assign | // bar = 10;
 			var_assign_def  | // var foo = 10; 
 			var_assign_expr  | // += -= ...
 			var_def | // var foo;
@@ -11,7 +12,7 @@ stmt1 ::=   var_assign | // bar = 10;
 			while |
 			for | 
 			switch |
-			call | 
+			call ";"| 
 			"return" expression  ";"| 
 			"break" ";"| 
 			"continue" ";"
@@ -26,6 +27,13 @@ var_assign_expr ::= ID ("+=" | "-=" | "*=" | "/=" | "%=") expression ";"
 var_def ::= "var" ID ";"
 
 
+call ::= ID "(" empty| (expression)*"," ")"
 
 
-expression ::= 
+expression ::= unary |  ...
+unary ::= (++|--)? lval (++|--)?
+math_expr ::= operand (+ | - | * | / | %) expression
+
+operand ::= rval 
+rval ::= number | float | call | lval 
+lval ::=  ID | ID "[" expression "]" 

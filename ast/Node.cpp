@@ -4,3 +4,7 @@
 void Node::print_token() {
 	std::cout << "node";
 }
+
+NodeType Node::get_type() {
+	return NodeType::NODE;
+}

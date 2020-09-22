@@ -15,3 +15,7 @@ void NumberConst::get_val()
 {
 	std::cout << "value = "<< val << std::endl;
 }
+
+NodeType NumberConst::get_type() {
+	return NodeType::NUMBERCONST;
+}

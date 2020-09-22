@@ -2,14 +2,16 @@
 #include <string>
 #include <ast/Expression.h>
 
-class NumberConst : public Expression {
+class FloatConst : public Expression {
 public:
 	std::string val;
-	NumberConst(std::string v);
-
+	FloatConst(std::string v);
+	
 
 	void get_val();
 
 	virtual NodeType get_type();
 	void print_token();
+
+
 };
