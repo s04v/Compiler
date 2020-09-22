@@ -1,0 +1,31 @@
+program ::= stmt0 | import 
+import ::= "import" <string>
+stmt0 ::=	function |
+			struct |
+			
+stmt1 ::=   var_assign | // bar = 10;
+			var_assign_def  | // var foo = 10; 
+			var_assign_expr  | // += -= ...
+			var_def | // var foo;
+			if | 
+			while |
+			for | 
+			switch |
+			call | 
+			"return" expression  ";"| 
+			"break" ";"| 
+			"continue" ";"
+
+function ::= "func" ID "(" params ")" ";"
+ 
+struct ::= "struct" ID "{ (var_assign_def | var_assign)* "}" ";"
+
+var_assign ::=  ID "=" expression ";"
+var_assign_def ::=  "var" ID "=" expression ";"
+var_assign_expr ::= ID ("+=" | "-=" | "*=" | "/=" | "%=") expression ";"
+var_def ::= "var" ID ";"
+
+
+
+
+expression ::= 
