@@ -8,6 +8,7 @@
 #include <ast/Node.h>
 #include <ast/Expression.h>
 #include <ast/NumberConst.h>
+#include <ast/FuncCall.h>
 
 void* func() {
 	NumberConst* n = new NumberConst("123");
@@ -18,6 +19,7 @@ void* func() {
 int main() {
 
 	
+
 	mInput::load_code("input.txt");
 	Lexer l;
 	Parser p;
@@ -30,15 +32,16 @@ int main() {
 		Token t = l.next_token();
 		i++;
 	}
-	
-
+	Token end;
+	end.type = END_TOKEN;
+	l.tokens.push_back(end);
 	p.tokens = l.tokens;
 	p.next();
-	Expression* e = (Expression*)p.parse_rval();
-	e->print_token();
+	Expression* e = (Expression*)p.parse_operand();
+	NodeType t = e->get_type();	
 
-	int a = 10;
 	//Expression* n = parse_expr(); // TODO:
+
 
 
 	//compiler

@@ -17,5 +17,5 @@ void FloatConst::get_val()
 }
 
 NodeType FloatConst::get_type() {
-	return NodeType::NUMBERCONST;
+	return NodeType::FLOAT_CONST;
 }

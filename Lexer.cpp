@@ -113,10 +113,10 @@ Token Lexer::next_token() {
 			tok.val += *mInput::code++;
 		}
 
-		if ((tok.type = is_keyword(tok.val)) != NULL) {
+		if ((tok.type = is_keyword(tok.val)) == NULL_TOKEN) {
 			tok.type = ID;
-	
 		}
+
 		break;
 	}
 
@@ -284,7 +284,7 @@ char* Lexer::scan_str() {
 }
 
 TokenType Lexer::is_keyword(std::string s) {
-	if(keywords_map.count(s));
+	if(keywords_map.count(s))
 		return keywords_map[s];
-	return (TokenType)NULL;
+	return NULL_TOKEN;
 }

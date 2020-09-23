@@ -17,5 +17,5 @@ void NumberConst::get_val()
 }
 
 NodeType NumberConst::get_type() {
-	return NodeType::NUMBERCONST;
+	return NodeType::NUMBER_CONST;
 }

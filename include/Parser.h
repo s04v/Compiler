@@ -30,5 +30,5 @@ public:
 	void expect(TokenType t);
 
 
-	void* parse_rval();
+	void* parse_operand();
 };

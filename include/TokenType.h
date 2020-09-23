@@ -1,6 +1,8 @@
 #pragma once
 
-enum TokenType {
+enum TokenType{ 
+	NULL_TOKEN,
+	END_TOKEN,
 	ID,
 	NUMBER, NUMBER_HEX,
 	FLOAT,

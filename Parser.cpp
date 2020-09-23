@@ -4,6 +4,10 @@
 #include <Parser.h>
 #include <ast/NumberConst.h>
 #include <ast/FloatConst.h>
+#include <ast/CharConst.h>
+#include <ast/FuncCall.h>
+#include <ast/Array.h>
+#include <ast/IDname.h>
 
 Parser::Parser() {}
 
@@ -26,34 +30,52 @@ void Parser::expect(TokenType t) {
 }
 
 
-
-void* Parser::parse_rval() {
+void* Parser::parse_operand() {
 	if (tok.type == NUMBER) {
-		NumberConst* n = new NumberConst(tok.val);
-		return n;
+		next();
+		return new NumberConst(tok.val);
 	}
 	else if (tok.type == FLOAT) {
-		FloatConst* f = new FloatConst(tok.val);
-		return f;
+		next();
+		return new FloatConst(tok.val);
 	}
 	else if (tok.type == ID) {
 		std::string name = tok.val;
 		next();
+		
+		
+		if (tok.type == LPAREN) { // func
+			//bug: only 8 args is allowed to pass to function
+			next();
 
+			if (tok.type != RPAREN) { 
+				Expression **args =   new Expression*[8]();
+				int i = 0;
+				do
+				{
+					if (tok.type == COMMA)
+						next();
 
-		expect(LPAREN);
-		
-		if (tok.type == RPAREN) {
-		
-		
+					args[i++] = (Expression*)parse_operand();// TODO: expr
+				} while (tok.type == COMMA && i < 8);
+
+				expect(RPAREN);
+				return new FuncCall(name,args);
+			} 
 		}
-			// TODO: func parser
-			//next();
-		expect(RPAREN);
-	 
+		else if (tok.type == LBRACKET) { // array
+			next();
+			Expression* e = (Expression*)parse_operand(); // TODO: expr
+			expect(RBRACKET);
 
-		return NULL;
+			return new Array(name, e);
+		}
+		
+		return new IDname(name);
 	}
+	
+	
+	// TODO: char and string 
 
 	return NULL;
 }
