@@ -11,6 +11,8 @@ enum NodeType {
 	FUNC_CALL,
 	ARRAY,
 	ID_NAME,
+
+	///...
 	
 	STMT,
 };

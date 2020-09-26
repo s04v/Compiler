@@ -18,8 +18,6 @@ void* func() {
 
 int main() {
 
-	
-
 	mInput::load_code("input.txt");
 	Lexer l;
 	Parser p;
@@ -37,14 +35,14 @@ int main() {
 	l.tokens.push_back(end);
 	p.tokens = l.tokens;
 	p.next();
-	Expression* e = (Expression*)p.parse_operand();
+	Expression* e = (Expression*)p.parse_expr();
 	NodeType t = e->get_type();	
 
-	//Expression* n = parse_expr(); // TODO:
+	// Expression* n = parse_expr(); 
+	// TODO:
 
 
-
-	//compiler
+	// compiler
 
 	return 0;
 }

@@ -12,5 +12,5 @@ public:
 
 	Array(std::string v, Expression* i);
 
-	virtual NodeType get_token() ;
+	NodeType get_type();
 };

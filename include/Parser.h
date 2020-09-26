@@ -30,5 +30,22 @@ public:
 	void expect(TokenType t);
 
 
+
+
 	void* parse_operand();
+
+	Expression* parse_unary();
+	Expression* parse_mul();
+	Expression* parse_add();
+	Expression* parse_great_less();
+	Expression* parse_cmp();
+	Expression* parse_and();
+	Expression* parse_or();
+	Expression* parse_expr();
+
+
+	// TODO: add ternary expression 
+	/// Expression* parse_ternary(); 
+
+
 };

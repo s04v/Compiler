@@ -9,6 +9,6 @@ Array::Array(std::string v, Expression* i) {
 	index = i;
 }
 
-NodeType Array::get_token() {
+NodeType Array::get_type() {
 	return ARRAY;
 }

@@ -128,6 +128,7 @@ Token Lexer::next_token() {
 	case '"': {
 		tok.val = scan_str(); 
 		tok.type = STRING;
+		next();
 		break;
 	}
 
@@ -144,8 +145,11 @@ Token Lexer::next_token() {
 	CASE1('~', NEG)
 	CASE2('!', NOT, '=', NOT_EQ)
 	CASE2('=', ASSIGN, '=', EQ)
+	CASE2('<', LT, '=', LTEQ)
+	CASE2('>', GT, '=', GTEQ)
 	CASE2('^', XOR, '=', XOR_ASSIGN)
 	CASE2('*', MUL, '=', MUL_ASSIGN)
+	CASE2('/', DIV, '=', DIV_ASSIGN)
 	CASE2('%', MOD, '=', MOD_ASSIGN)
 	CASE3('+', ADD, '=', ADD_ASSIGN, '+', INC)
 	CASE3('-', SUB, '=', SUB_ASSIGN, '-', DEC)

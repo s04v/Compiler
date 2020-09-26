@@ -8,6 +8,8 @@ enum TokenType{
 	FLOAT,
 	CHAR,
 	STRING,
+	SQUOTE,
+	DQUOTE,
 
 	LPAREN, RPAREN, // ()
 	LBRACE, RBRACE, // { }
@@ -15,7 +17,8 @@ enum TokenType{
 
 	COMMA,
 	DOT,
-	SEMICOLON,
+	SEMICOLON, // ;
+	COLON, // :
 
 	QUESTION,
 
