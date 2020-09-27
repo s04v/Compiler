@@ -165,6 +165,7 @@ Token Lexer::next_token() {
 }
 
 
+
 char* Lexer::scan_number() {
 	char* buf = new char[20];
 	memset(buf, 0, 20);

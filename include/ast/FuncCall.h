@@ -2,6 +2,7 @@
 #include <iostream>
 #include <ast/NodeType.h>
 #include <ast/Expression.h>
+#include <ast/Stmt.h>
 
 class FuncCall : public Expression {
 public:

@@ -1,5 +1,8 @@
 #pragma once
 #include <ast/Node.h>
-class Stmt : public Node {
+#include <ast/NodeType.h>
 
+class Stmt : public Node {
+public:
+	virtual NodeType get_type();
 };

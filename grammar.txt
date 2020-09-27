@@ -8,6 +8,7 @@ stmt1 ::=   expression;
 			var_assign_def  | // var foo = 10; 
 			var_assign_expr  | // += -= ...
 			var_def | // var foo;
+			function |
 			if | 
 			while |
 			for | 
@@ -30,10 +31,11 @@ var_def ::= "var" ID ";"
 call ::= ID "(" empty| (expression)*"," ")"
 
 
+
 expression ::= unary |  ...
 unary ::= (++|--)? lval (++|--)?
-math_expr ::= operand (+ | - | * | / | %) expression
 
+math_expr ::= operand (+ | - | * | / | %) expression
 operand ::= rval 
-rval ::= number | float | call | lval 
+rval ::= number | float | call | lval | ' symbol ' | " string "
 lval ::=  ID | ID "[" expression "]" 

@@ -1,13 +1,13 @@
 #pragma once
 #include <ast/Node.h>
+#include <ast/Stmt.h>
 #include <TokenType.h>
 
 
-class Expression : public Node {
+class Expression : public Stmt, Node {
 public:
 	
-	
-	
+
 	Expression* expr1;
 	Expression* expr2;
 

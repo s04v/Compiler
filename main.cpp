@@ -10,13 +10,13 @@
 #include <ast/NumberConst.h>
 #include <ast/FuncCall.h>
 
-void* func() {
-	NumberConst* n = new NumberConst("123");
-	return n;
-}
+#include <m_assert.h>
 
 
 int main() {
+
+
+	
 
 	mInput::load_code("input.txt");
 	Lexer l;
@@ -35,7 +35,8 @@ int main() {
 	l.tokens.push_back(end);
 	p.tokens = l.tokens;
 	p.next();
-	Expression* e = (Expression*)p.parse_expr();
+	Stmt* e = p.parse_stmt();
+	
 	NodeType t = e->get_type();	
 
 	// Expression* n = parse_expr(); 

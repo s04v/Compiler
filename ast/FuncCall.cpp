@@ -10,3 +10,4 @@ FuncCall::FuncCall(std::string v, Expression** a) {
 NodeType FuncCall::get_type() {
 	return FUNC_CALL;
 }
+
