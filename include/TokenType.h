@@ -60,6 +60,10 @@ enum TokenType{
 	FUNC_KEY,
 	IF_KEY,
 	ELSE_KEY,
+	FOR_KEY,
+	WHILE_KEY,
+	CONTINUE_KEY,
+	BREAK_KEY,
 
 
 

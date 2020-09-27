@@ -62,6 +62,11 @@ void Lexer::init_keywords() {
 	keywords_map["if"] = IF_KEY;
 	keywords_map["else"] = ELSE_KEY;
 
+	keywords_map["for"] = FOR_KEY;
+	keywords_map["while"] = WHILE_KEY;
+	keywords_map["continue"] = CONTINUE_KEY;
+	keywords_map["break"] = BREAK_KEY;
+
 	
 }
 

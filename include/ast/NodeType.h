@@ -32,10 +32,12 @@ enum NodeType {
 	FUNC_DEF,
 	FUNC_DECL,
 
-
 	IF,
 	IF_THEN,
 	IF_ELSE,
-	
+
+	FOR,
+	WHILE,
+
 	STMT,
 };

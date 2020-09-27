@@ -39,9 +39,7 @@ int main() {
 	
 	NodeType t = e->get_type();	
 
-	// Expression* n = parse_expr(); 
 	// TODO:
-
 
 	// compiler
 

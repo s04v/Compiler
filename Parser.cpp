@@ -13,6 +13,8 @@
 #include <ast/VarStmt.h>
 #include <ast/Func.h>
 #include <ast/IfStmt.h>
+#include <ast/ForStmt.h>
+#include <ast/WhileStmt.h>
 
 #include <m_assert.h>
 
@@ -313,7 +315,15 @@ Stmt* Parser::parse_stmt() {
 		
 		expect(LBRACE, "Missing {");
 		
-			s->th = parse_stmt();
+		std::vector<Stmt*> body_th;
+
+		while (tok.type != RBRACE) {
+			body_th.push_back(parse_stmt());
+			NodeType st = body_th[0]->get_type();
+			if (st == FUNC)
+				m_assert(0, "Invalid Statment");
+		}
+		s->th = body_th;
 		expect(RBRACE, "Missing }");
 
 		if (tok.type != ELSE_KEY){
@@ -323,14 +333,70 @@ Stmt* Parser::parse_stmt() {
 		next();
 		
 		expect(LBRACE, "Missing {");
-		s->el = parse_stmt();
+
+		std::vector<Stmt*> body_el;
+
+		while (tok.type != RBRACE) {
+			body_el.push_back(parse_stmt());
+			NodeType st = body_el[0]->get_type();
+			if (st == FUNC)
+				m_assert(0, "Invalid Statment");
+		}
+		s->el = body_el;
+
 		expect(RBRACE, "Missing }");
 		s->type = IF_ELSE;
 
 		return s;
 	}
+	case FOR_KEY: {
+		next();
+		Stmt* init = NULL;
+		Expression* cond = NULL;
+		Expression* next = NULL;
+		std::vector<Stmt*> body;
 
+		expect(LPAREN, "Missing (");
+		init = parse_stmt();
+		cond = parse_expr();
+		expect(SEMICOLON, "Missing ;");
+		next = parse_expr();
+		expect(RPAREN, "Missing )");
+		expect(LBRACE, "Missing {");
 
+		
+
+		while (tok.type != RBRACE) {
+			body.push_back(parse_stmt());
+			NodeType st = body[0]->get_type();
+			if (st == FUNC)
+				m_assert(0, "Invalid Statment");
+		}
+
+		expect(RBRACE, "Missing }");
+		return new ForStmt(init, cond, next,body);
+	}
+	case WHILE_KEY: {
+		next();
+		Expression* cond = NULL;
+		std::vector<Stmt*> body;
+
+		expect(LPAREN, "Missing (");
+		cond = parse_expr();
+		expect(RPAREN, "Missing )");
+		expect(LBRACE, "Missing {");
+
+		while (tok.type != RBRACE) {
+			body.push_back(parse_stmt());
+			NodeType st = body[0]->get_type();
+			if (st == FUNC)
+				m_assert(0, "Invalid Statment");
+		}
+
+		expect(RBRACE, "Missing }");
+
+		return new WhileStmt(cond, body);
+	}
 	default:
 		
 		std::cout << "[parse_stmt] invalid token" << std::endl;

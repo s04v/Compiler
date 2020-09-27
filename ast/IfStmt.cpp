@@ -1,3 +1,4 @@
+#include <vector>
 #include <ast/Node.h>
 #include <ast/NodeType.h>
 #include <ast/Expression.h>
@@ -7,7 +8,7 @@
 IfStmt::IfStmt() {}
 
 
-IfStmt::IfStmt(Expression* c, Stmt* t, Stmt* e, NodeType tp) {
+IfStmt::IfStmt(Expression* c, std::vector<Stmt*> &t, std::vector<Stmt*> &e, NodeType tp){
 	cond = c;
 	th = t;
 	el = e;
