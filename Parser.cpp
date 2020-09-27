@@ -59,7 +59,7 @@ Expression* Parser::parse_operand() {
 		next();
 		
 		if (tok.type == LPAREN) { // func
-			//bug: only 8 args is allowed to pass to function
+			//TODO: fix bug - only 8 args is allowed to pass to function
 			next();
 
 			if (tok.type != RPAREN) { 
@@ -76,6 +76,7 @@ Expression* Parser::parse_operand() {
 				expect(RPAREN);
 				return new FuncCall(name,args);
 			} 
+			next();
 			return new FuncCall(name, NULL);
 		}
 		else if (tok.type == LBRACKET) { // array
@@ -197,6 +198,8 @@ Expression* Parser::parse_expr() {
 Stmt* Parser::parse_stmt() {
 	
 	std::string name;
+
+
 	switch (tok.type) {
 	case ID: {
 		save();
@@ -210,6 +213,47 @@ Stmt* Parser::parse_stmt() {
 		restore();
 		name = tok.val;
 		next();
+
+		// array
+		if (tok.type == LBRACKET) {
+			next();
+
+			Expression* index = parse_expr();
+			
+			expect(RBRACKET, "Missing ]");
+
+			NodeType nt;
+			switch (tok.type) {
+			case ASSIGN:
+				nt = ARR_ASSIGN;
+				break;
+			case ADD_ASSIGN:
+				nt = ARR_ASSIGN_ADD;
+				break;
+			case SUB_ASSIGN:
+				nt = ARR_ASSIGN_SUB;
+				break;
+			case MUL_ASSIGN:
+				nt = ARR_ASSIGN_MUL;
+				break;
+			case DIV_ASSIGN:
+				nt = ARR_ASSIGN_DIV;
+				break;
+			case MOD_ASSIGN:
+				nt = ARR_ASSIGN_MOD;
+				break;
+			default:
+				m_assert(0, "Error token");
+			}
+
+			next();
+			VarStmt* s = new VarStmt(nt, name,index, parse_expr());
+			expect(SEMICOLON, "Missing ;");
+			return s;
+
+		}
+
+		// if not an array
 		NodeType nt;
 		switch (tok.type) {
 		case ASSIGN:
@@ -238,7 +282,7 @@ Stmt* Parser::parse_stmt() {
 		expect(SEMICOLON, "Missing ;");
 		return s;
 
-		m_assert(0, "Invalid expression");
+		//m_assert(0, "Invalid expression");
 	}
 	case LET_KEY: {
 		next();
@@ -248,6 +292,42 @@ Stmt* Parser::parse_stmt() {
 		if (tok.type == SEMICOLON)
 			return new VarStmt(VAR_DECL, name, NULL);
 
+
+		// let arr[10] = {12,3, 4, 5, 6, 7}
+		// TODO: check size  of init list  and index
+
+
+		if (tok.type == LBRACKET) {
+			next();
+			Expression* index = parse_operand();
+			m_assert(index->get_type() == NUMBER_CONST, "Index must be constant value");
+			expect(RBRACKET, "Missing ]");
+
+			if (tok.type == SEMICOLON)
+				return new VarStmt(ARR_DECL, name, index, NULL);
+
+			next();
+			expect(ASSIGN, "Expect assing operator");
+			expect(LBRACE, "Missing { ");
+			
+			std::vector<Expression*> vals;
+			
+			do
+			{
+				if (tok.type == COMMA)
+					next();
+				
+				vals.push_back(parse_expr());
+//					next();
+				
+			} while (tok.type == COMMA);
+
+			expect(RBRACE, "Missing } ");
+			expect(SEMICOLON, "Missing ; ");
+
+			return new VarStmt(ARR_DEF, name, index, vals);
+			
+		} 
 
 		expect(ASSIGN," Expect assing operator");
 		VarStmt* s = new VarStmt(VAR_DEF, name, parse_expr());
@@ -295,18 +375,15 @@ Stmt* Parser::parse_stmt() {
 				if (st == FUNC)
 					m_assert(0, "Invalid Statment");
 			}
-			// TODO: parse function body
 
 			expect(RBRACE, "Missing }");
 
 			return new Func(FUNC_DEF, name, args, body);
-			// TODO: return function definition
 		}
 
 		
 	}
 	case IF_KEY: {
-		//TODO: change stmt* to std::vector<Stmt*> 
 		next();
 		IfStmt* s = new IfStmt();
 		expect(LPAREN, "Missing (");
@@ -397,6 +474,15 @@ Stmt* Parser::parse_stmt() {
 
 		return new WhileStmt(cond, body);
 	}
+	case CONTINUE_KEY:
+	case BREAK_KEY: {
+		Expression* e = new Expression();
+		e->etype = tok.type;
+		next();
+		expect(SEMICOLON, "Missing ;");
+		return e;
+	}
+	
 	default:
 		
 		std::cout << "[parse_stmt] invalid token" << std::endl;

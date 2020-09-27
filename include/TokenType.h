@@ -62,6 +62,7 @@ enum TokenType{
 	ELSE_KEY,
 	FOR_KEY,
 	WHILE_KEY,
+
 	CONTINUE_KEY,
 	BREAK_KEY,
 

@@ -16,8 +16,6 @@
 int main() {
 
 
-	
-
 	mInput::load_code("input.txt");
 	Lexer l;
 	Parser p;
@@ -26,7 +24,9 @@ int main() {
 
 	//lexer
 	int i = 0;
-	while (*mInput::code) {
+	//TODO: fix bug with space in end of line
+
+	while (*mInput::code ) {
 		Token t = l.next_token();
 		i++;
 	}
@@ -39,7 +39,7 @@ int main() {
 	
 	NodeType t = e->get_type();	
 
-	// TODO:
+	
 
 	// compiler
 

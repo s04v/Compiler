@@ -26,6 +26,15 @@ enum NodeType {
 	VAR_ASSIGN_DIV, 
 	VAR_ASSIGN_MOD, 
 
+	ARR,
+	ARR_DECL,		// var a[2];
+	ARR_DEF,		// var a[2] = {1,2};
+	ARR_ASSIGN,		// a[0] = 10
+	ARR_ASSIGN_ADD, // a[1] += 10;
+	ARR_ASSIGN_SUB, // ...
+	ARR_ASSIGN_MUL,
+	ARR_ASSIGN_DIV,
+	ARR_ASSIGN_MOD,
 	///...
 
 	FUNC,
@@ -36,8 +45,11 @@ enum NodeType {
 	IF_THEN,
 	IF_ELSE,
 
+
 	FOR,
 	WHILE,
+
+
 
 	STMT,
 };
