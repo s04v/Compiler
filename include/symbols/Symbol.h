@@ -3,8 +3,8 @@
 
 
 enum SymType {
-	VAR,
-	FUNC
+	VAR_SYM,
+	FUNC_SYM,
 };
 
 class Symbol {
@@ -13,6 +13,6 @@ public:
 	std::string name;
 	std::string val;
 
-	Symbol(SymType t, std::string n);
+	Symbol(SymType t, std::string n, std::string v);
 
 };

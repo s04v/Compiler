@@ -12,4 +12,5 @@ public:
 
 	void put(SymType t, std::string name, std::string val);
 	Symbol get(std::string name);
+	bool contain(std::string name);
 };
