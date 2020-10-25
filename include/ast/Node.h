@@ -1,13 +1,20 @@
 #pragma once
 #include <TokenType.h>
 #include <ast/NodeType.h>
+#include <string>
+
+
 class Node {
 public:
-	TokenType type;
+	NodeType type;
+	std::string val;
 	
-	virtual void print_token();
-	virtual NodeType get_type();
+	Node* left;
+	Node* mid;
+	Node* right;
 
 
-	static Node* parse_node() {}
+	Node();
+
+	virtual NodeType get_ntype();
 };

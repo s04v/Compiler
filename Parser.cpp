@@ -1,22 +1,13 @@
 #include <assert.h>
 #include <iostream>
+#include <string>
 
 #include <Parser.h>
-#include <ast/NumberConst.h>
-#include <ast/FloatConst.h>
-#include <ast/CharConst.h>
-#include <ast/StringConst.h>
-#include <ast/FuncCall.h>
-#include <ast/Array.h>
-#include <ast/IDname.h>
-#include <ast/ExprType.h>
-#include <ast/VarStmt.h>
-#include <ast/Func.h>
-#include <ast/IfStmt.h>
-#include <ast/ForStmt.h>
-#include <ast/WhileStmt.h>
 
+#include <ast/Node.h>
+#include <ast/NodeType.h>
 #include <m_assert.h>
+
 
 Parser::Parser() {}
 
@@ -44,26 +35,34 @@ void Parser::expect(TokenType t, std::string msg = "") {
 }
 
 
-Expression* Parser::parse_operand() {
+Node* Parser::parse_operand() {
 	if (tok.type == NUMBER) {
-		std::string val = tok.val;
+		Node* r = new Node();
+		r->type = NodeType::NUMBER_CONST;
+		r->val = tok.val;
 		next();
-		return new NumberConst(val);
+		
+		return r;
 	}
 	else if (tok.type == FLOAT) {
 		next();
-		return new FloatConst(tok.val);
+		Node* r = new Node();
+		r->type = NodeType::FLOAT_CONST;
+		r->val = tok.val;
+		next();
+		return r;
 	}
 	else if (tok.type == ID) {
 		std::string name = tok.val;
 		next();
+	
 		
 		if (tok.type == LPAREN) { // func
 			//TODO: fix bug - only 8 args is allowed to pass to function
 			next();
 
 			if (tok.type != RPAREN) { 
-				Expression **args =   new Expression*[8]();
+				Node** args = new Node*[8]();
 				int i = 0;
 				do
 				{
@@ -74,30 +73,49 @@ Expression* Parser::parse_operand() {
 				} while (tok.type == COMMA && i < 8);
 
 				expect(RPAREN);
-				return new FuncCall(name,args);
+				Node* r = new Node();
+				r->type = NodeType::FUNC_CALL;
+				r->val = name;
+				r->mid = *args;
+				return r;
 			} 
+			Node* r = new Node();
+			r->type = NodeType::FUNC_CALL;
+			r->val = name;
+
 			next();
-			return new FuncCall(name, NULL);
+			return r;
 		}
-		else if (tok.type == LBRACKET) { // array
+		/*else if (tok.type == LBRACKET) { // array
 			next();
-			Expression* e = parse_expr(); // index
+			Node* e = parse_expr(); // index
 			expect(RBRACKET);
 
-			return new Array(name, e);
-		}
-		
-		return new IDname(name);
+			//return new Array(name, e);
+		}*/
+		Node* r = new Node();
+		r->type = NodeType::ID_NAME;
+		r->val = name;
+
+		return r;
 	}
+
 	else if (tok.type == CHAR) {
-		return new CharConst(*(tok.val.c_str()));
+		Node* r = new Node();
+		r->type = NodeType::CHAR_CONST;
+		r->val = tok.val;
+		return r;
 	} 
 	else if (tok.type == STRING) {
-		return new StringConst(tok.val);
+		Node* r = new Node();
+		r->type = NodeType::STRING_CONST;
+		r->val = tok.val;
+		return r;
 	}
+
 	else if (tok.type == LPAREN) {
 		next();
-		Expression* e = parse_expr();
+		Node* e = parse_expr();
 		expect(RPAREN);
 		
 		return e;
@@ -105,97 +123,153 @@ Expression* Parser::parse_operand() {
 
 	return NULL;
 }
-Expression* Parser::parse_unary() {
+Node* Parser::parse_unary() {
 	
 	//TODO: change expression intialization
-	Expression* e1 = new Expression();
+	Node* e1 = new Node();
 
-	e1->expr1 = (Expression*)parse_operand();
+	e1->left = parse_operand();
 	
-	if (tok.type == INC) {
-		e1->etype = INC;
+	if (tok.type == TokenType::INC) {
+		e1->type = NodeType::N_INC;
 		next();
 		return e1;
 	}
-	else if (tok.type == DEC){
-		e1->etype = DEC;
+	else if (tok.type == TokenType::DEC){
+		e1->type = NodeType::N_DEC;
 		next();
 		return e1;
 	}
 
-	return e1->expr1;
+	return e1->left;
 }
 
-Expression* Parser::parse_mul() {
-	Expression* expr = parse_unary();
+Node* Parser::parse_mul() {
+	Node* expr = parse_unary();
 
-	while (tok.type == MUL || tok.type == DIV || tok.type == MOD) {
+	//Node* r = new Node();
+	while (tok.type == TokenType::MUL || tok.type == TokenType::DIV || tok.type == TokenType::MOD) {
 		TokenType t = tok.type;
 		next();
-		expr = new Expression(t, expr, parse_unary());
+		
+		expr->left = new Node(*expr);
+
+		switch (t) {
+		case TokenType::MUL:
+			expr->type = NodeType::N_MUL;
+			break;
+		case TokenType::DIV:
+			expr->type = NodeType::N_DIV;
+			break;
+		case TokenType::MOD:
+			expr->type = NodeType::N_MOD;
+		}
+		
+		expr->right = parse_unary();
 	}
 
 	return expr;
 }
 
-Expression* Parser::parse_add() {
-	Expression* expr = parse_mul();
-
-	while (tok.type == ADD || tok.type == SUB) {
+Node* Parser::parse_add() {
+	Node* expr = parse_mul();
+	
+	while (tok.type == TokenType::ADD || tok.type == TokenType::SUB) {
 		TokenType t = tok.type;
 		next();
-		expr = new Expression(t, expr, parse_mul());
+		expr->left = new Node(*expr);
+		expr->type = t == TokenType::ADD ? NodeType::N_ADD : NodeType::N_SUB;
+
+		expr->right = parse_mul();
 	}
 	return expr;
 }
 
-Expression* Parser::parse_great_less() {
-	Expression* expr = parse_add();
-	while (tok.type == GT || tok.type == GTEQ || tok.type == LT || tok.type == LTEQ) {
+Node* Parser::parse_great_less() {
+	Node* expr = parse_add();
+	Node* r = new Node();
+
+	while (tok.type == TokenType::GT || tok.type == TokenType::GTEQ || tok.type == TokenType::LT || tok.type == TokenType::LTEQ) {
 		TokenType t = tok.type;
 		next();
-		expr = new Expression(t, expr, parse_add());
+		
+		
+		expr->left = new Node(*expr);
+
+		switch (t) {
+		case TokenType::GT:
+			expr->type = NodeType::N_GT;
+			break;
+		case TokenType::GTEQ:
+			expr->type = NodeType::N_GTEQ;
+			break;
+		case TokenType::LT:
+			expr->type = NodeType::N_LT;
+			break;
+		case TokenType::LTEQ:
+			expr->type = NodeType::N_LTEQ;
+			break;
+		}
+		expr->right = parse_add();
 	}
 
 	return expr;
 }
 
-Expression* Parser::parse_cmp() {
-	Expression* expr = parse_great_less();
-	while (tok.type == EQ || tok.type == NOT_EQ) {
+Node* Parser::parse_cmp() {
+	Node* expr = parse_great_less();
+
+	while (tok.type == TokenType::EQ || tok.type == TokenType::NOT_EQ) {
 		TokenType t = tok.type;
 		next();
-		expr = new Expression(t, expr, parse_great_less());
+
+		expr->left = new Node(*expr);
+		expr->type = t == TokenType::EQ ? NodeType::N_EQ : NodeType::N_NOT_EQ;
+
+		expr->right = parse_great_less();
 	}
 	return expr;
 }
 
-Expression* Parser::parse_and() {
-	Expression* expr = parse_cmp();
-	while (tok.type == AND_AND) {
+Node* Parser::parse_and() {
+	Node* expr = parse_cmp();
+
+	while (tok.type == TokenType::AND_AND) {
 		TokenType t = tok.type;
 		next();
-		expr = new Expression(AND_AND, expr, parse_cmp());
+		expr->left = new Node(*expr);
+
+
+		expr->type = NodeType::N_AND_AND;
+
+		expr->right = parse_cmp();
 	}
 	return expr;
 }
 
-Expression* Parser::parse_or() {
-	Expression* expr = parse_and();
-	while (tok.type == OR_OR) {
+Node* Parser::parse_or() {
+	Node* expr = parse_and();
+	Node* r = new Node();
+
+	while (tok.type == TokenType::OR_OR) {
 		TokenType t = tok.type;
 		next();
-		expr = new Expression(OR_OR, expr, parse_and());
+		r->type = NodeType::N_OR_OR;
+
+		r->left = new Node(*expr);;
+		r->right = parse_and();
 	}
 	return expr;
 }
 
-Expression* Parser::parse_expr() {
+Node* Parser::parse_expr() {
 	return parse_or();
 }
 
 
-Stmt* Parser::parse_stmt() {
+//stmt
+/*
+Node* Parser::parse_stmt() {
 	
 	std::string name;
 
@@ -203,8 +277,8 @@ Stmt* Parser::parse_stmt() {
 	switch (tok.type) {
 	case ID: {
 		save();
-		Expression* e = parse_unary();
-		TokenType t = e->etype;
+		Node* e = parse_unary();
+		NodeType t = e->type;
 		if (t == INC || t == DEC || e->get_type() == FUNC_CALL) {
 			//next();
 			expect(SEMICOLON, "Missing ;");
@@ -489,3 +563,5 @@ Stmt* Parser::parse_stmt() {
 		exit(1);
 	}
 }
+
+*/

@@ -6,15 +6,14 @@
 #include <ast/NodeType.h>
 
 #include <ast/Node.h>
-#include <ast/Expression.h>
-#include <ast/NumberConst.h>
-#include <ast/FuncCall.h>
 
 #include <m_assert.h>
 
+#include <symbols/Symbol.h>
+#include <symbols/SymbolScope.h>
+#include <symbols/SymbolTable.h>
 
 int main() {
-
 
 	mInput::load_code("input.txt");
 	Lexer l;
@@ -35,12 +34,12 @@ int main() {
 	l.tokens.push_back(end);
 	p.tokens = l.tokens;
 	p.next();
-	Stmt* e = p.parse_stmt();
 	
-	NodeType t = e->get_type();	
-
 	
+	Node* e = p.parse_expr();
 
+
+	int a = 10;
 	// compiler
 
 	return 0;

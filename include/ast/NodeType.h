@@ -1,9 +1,17 @@
 #pragma once 
 
 enum NodeType {
-
 	NODE,
+	
 	EXPRESSION,
+	N_OR_OR,
+	N_AND_AND,
+	N_EQ,
+	N_NOT_EQ,
+	N_LT, N_LTEQ,
+	N_GT, N_GTEQ,
+	
+
 	NUMBER_CONST,
 	FLOAT_CONST,
 	CHAR_CONST,
@@ -11,8 +19,10 @@ enum NodeType {
 	FUNC_CALL,
 	ARRAY,
 	ID_NAME,
-		
+	VAR,	
 
+	N_ADD, N_SUB, N_MUL, N_DIV, N_MOD,
+	N_INC, N_DEC,
 	// stmts 
 	// var  stmt
 	VAR_STMT,
@@ -48,8 +58,6 @@ enum NodeType {
 
 	FOR,
 	WHILE,
-
-
 
 	STMT,
 };

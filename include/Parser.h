@@ -5,10 +5,7 @@
 #include <Token.h>
 #include <ast/Node.h>
 #include <ast/NodeType.h>
-#include <ast/Stmt.h>
-#include <ast/Expression.h>
-#include <ast/NumberConst.h>
-#include <ast/FloatConst.h>
+
 
 
 class Parser {
@@ -32,21 +29,21 @@ public:
 
 
 
-	Expression* parse_operand();
+	Node* parse_operand();
 
-	Expression* parse_unary();
-	Expression* parse_mul();
-	Expression* parse_add();
-	Expression* parse_great_less();
-	Expression* parse_cmp();
-	Expression* parse_and();
-	Expression* parse_or();
-	Expression* parse_expr();
+	Node* parse_unary();
+	Node* parse_mul();
+	Node* parse_add();
+	Node* parse_great_less();
+	Node* parse_cmp();
+	Node* parse_and();
+	Node* parse_or();
+	Node* parse_expr();
 	// TODO: add ternary expression 
 	/// Expression* parse_ternary(); 
 
 
-	Stmt* parse_stmt();
+	Node* parse_stmt();
 
 
 };
