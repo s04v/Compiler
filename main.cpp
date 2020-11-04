@@ -12,7 +12,17 @@
 #include <symbols/Symbol.h>
 #include <symbols/SymbolScope.h>
 #include <symbols/SymbolTable.h>
+#include <vector>
 
+class test {
+
+	test* t1;
+	test* t2;
+	std::string val;
+
+	test(){}
+
+};
 int main() {
 
 	mInput::load_code("input.txt");
@@ -35,8 +45,9 @@ int main() {
 	p.tokens = l.tokens;
 	p.next();
 	
+
 	
-	Node* e = p.parse_expr();
+	Node* e = p.parse_stmt();
 
 
 	int a = 10;

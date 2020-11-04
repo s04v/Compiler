@@ -166,6 +166,7 @@ Node* Parser::parse_mul() {
 		}
 		
 		expr->right = parse_unary();
+		
 	}
 
 	return expr;
@@ -268,18 +269,17 @@ Node* Parser::parse_expr() {
 
 
 //stmt
-/*
+
 Node* Parser::parse_stmt() {
 	
 	std::string name;
-
 
 	switch (tok.type) {
 	case ID: {
 		save();
 		Node* e = parse_unary();
 		NodeType t = e->type;
-		if (t == INC || t == DEC || e->get_type() == FUNC_CALL) {
+		if (t == NodeType::N_INC || t == NodeType::N_DEC || t == NodeType::FUNC_CALL) {
 			//next();
 			expect(SEMICOLON, "Missing ;");
 			return e;
@@ -288,11 +288,11 @@ Node* Parser::parse_stmt() {
 		name = tok.val;
 		next();
 
-		// array
-		if (tok.type == LBRACKET) {
+		// TODO: array
+		/*if (tok.type == LBRACKET) {
 			next();
 
-			Expression* index = parse_expr();
+			Node* index = parse_expr();
 			
 			expect(RBRACKET, "Missing ]");
 
@@ -321,40 +321,44 @@ Node* Parser::parse_stmt() {
 			}
 
 			next();
+			Node* r = new 
 			VarStmt* s = new VarStmt(nt, name,index, parse_expr());
 			expect(SEMICOLON, "Missing ;");
 			return s;
 
-		}
+		}*/
 
 		// if not an array
 		NodeType nt;
 		switch (tok.type) {
 		case ASSIGN:
-			nt = VAR_ASSIGN;
+			nt = NodeType::VAR_ASSIGN;
 			break;
 		case ADD_ASSIGN:
-			nt = VAR_ASSIGN_ADD;
+			nt = NodeType::VAR_ASSIGN_ADD;
 			break;
 		case SUB_ASSIGN:
-			nt = VAR_ASSIGN_SUB;
+			nt = NodeType::VAR_ASSIGN_SUB;
 			break;
 		case MUL_ASSIGN:
-			nt = VAR_ASSIGN_MUL;
+			nt = NodeType::VAR_ASSIGN_MUL;
 			break;
 		case DIV_ASSIGN:
-			nt = VAR_ASSIGN_DIV;
+			nt = NodeType::VAR_ASSIGN_DIV;
 			break;
 		case MOD_ASSIGN:
-			nt = VAR_ASSIGN_MOD;
+			nt = NodeType::VAR_ASSIGN_MOD;
 			break;
 		default :
 			m_assert(0, "Error token");
 		}
 		next();
-		VarStmt* s = new VarStmt(nt, name, parse_expr());
+		Node* r = new Node();
+		r->type = nt;
+		r->val = name;
+		r->left = parse_expr();
 		expect(SEMICOLON, "Missing ;");
-		return s;
+		return r;
 
 		//m_assert(0, "Invalid expression");
 	}
@@ -363,14 +367,19 @@ Node* Parser::parse_stmt() {
 		m_assert(tok.type == ID, "Invalid ID");
 		name = tok.val;
 		next();
-		if (tok.type == SEMICOLON)
-			return new VarStmt(VAR_DECL, name, NULL);
+		if (tok.type == SEMICOLON) {
+			Node* r = new Node();
+			r->type = VAR_DECL;
+			r->val = name;
+			return r;
+		}
 
 
 		// let arr[10] = {12,3, 4, 5, 6, 7}
 		// TODO: check size  of init list  and index
 
-
+		//TODO:
+		/*
 		if (tok.type == LBRACKET) {
 			next();
 			Expression* index = parse_operand();
@@ -401,15 +410,18 @@ Node* Parser::parse_stmt() {
 
 			return new VarStmt(ARR_DEF, name, index, vals);
 			
-		} 
+		} */
 
-		expect(ASSIGN," Expect assing operator");
-		VarStmt* s = new VarStmt(VAR_DEF, name, parse_expr());
+		expect(ASSIGN," Expect assing operator or semicolon");
+		Node* r = new Node();
+		r->type = VAR_DEF;
+		r->val = name;
+		r->left = parse_expr();
 		
 		m_assert(tok.type == SEMICOLON, "Missing ;");
 		next();
 
-		return s;
+		return r;
 		// TODO: var assing ...
 	}
 	case FUNC_KEY: {
@@ -437,44 +449,55 @@ Node* Parser::parse_stmt() {
 		} while (tok.type == COMMA && i < 8);
 		expect(RPAREN, "Missing )");
 
-		if (tok.type == SEMICOLON)
-			return new Func(FUNC_DECL, name, args); 
-		else if (tok.type == LBRACE) {
+		if (tok.type == SEMICOLON) {
+			Node* r = new Node();
+			r->type = FUNC_DECL;
+			r->val = name;
+			// TODO: arguments
+			//r->mid = *args;
+			return r;
+		}
+		if (tok.type == LBRACE) {
 			next();
-			std::vector<Stmt*> body;
+			Node* r = new Node();
+			r->type = FUNC_DEF;
+			r->val = name;
+			std::vector<Node*> *body = new std::vector<Node*>();
 
 			while (tok.type != RBRACE) {
-				body.push_back(parse_stmt());
-				NodeType st = body[0]->get_type();
+				body->push_back(parse_stmt());
+				NodeType st = (*body)[0]->get_ntype();
 				if (st == FUNC)
 					m_assert(0, "Invalid Statment");
 			}
+			r->l = body;
 
 			expect(RBRACE, "Missing }");
-
-			return new Func(FUNC_DEF, name, args, body);
+			//TODO:
+			//return new Func(FUNC_DEF, name, args, body);
+			return r;
 		}
-
 		
 	}
 	case IF_KEY: {
 		next();
-		IfStmt* s = new IfStmt();
+		Node* s = new Node();
 		expect(LPAREN, "Missing (");
-		s->cond = parse_expr();
+		s->mid= parse_expr();
 		expect(RPAREN, "Missing )");
 		
 		expect(LBRACE, "Missing {");
 		
-		std::vector<Stmt*> body_th;
+		std::vector<Node*> *body_th = new std::vector<Node*>();
 
 		while (tok.type != RBRACE) {
-			body_th.push_back(parse_stmt());
-			NodeType st = body_th[0]->get_type();
+			body_th->push_back(parse_stmt());
+			NodeType st = (*body_th)[0]->get_ntype();
 			if (st == FUNC)
 				m_assert(0, "Invalid Statment");
 		}
-		s->th = body_th;
+
+		s->l = body_th;
 		expect(RBRACE, "Missing }");
 
 		if (tok.type != ELSE_KEY){
@@ -485,27 +508,28 @@ Node* Parser::parse_stmt() {
 		
 		expect(LBRACE, "Missing {");
 
-		std::vector<Stmt*> body_el;
+		std::vector<Node*> *body_el = new std::vector<Node*>();
 
 		while (tok.type != RBRACE) {
-			body_el.push_back(parse_stmt());
-			NodeType st = body_el[0]->get_type();
+			body_el->push_back(parse_stmt());
+			NodeType st = (*body_el)[0]->get_ntype();
 			if (st == FUNC)
 				m_assert(0, "Invalid Statment");
 		}
-		s->el = body_el;
+		s->r = body_el;
 
 		expect(RBRACE, "Missing }");
 		s->type = IF_ELSE;
-
+		
 		return s;
 	}
 	case FOR_KEY: {
 		next();
-		Stmt* init = NULL;
-		Expression* cond = NULL;
-		Expression* next = NULL;
-		std::vector<Stmt*> body;
+		Node* init;
+		Node* cond;
+		Node* next;
+
+		std::vector<Node*> *body = new std::vector<Node*>();
 
 		expect(LPAREN, "Missing (");
 		init = parse_stmt();
@@ -515,22 +539,31 @@ Node* Parser::parse_stmt() {
 		expect(RPAREN, "Missing )");
 		expect(LBRACE, "Missing {");
 
-		
+		Node *conf = new Node();
+		conf->left = init;
+		conf->mid = cond;
+		conf->right = next;
+
 
 		while (tok.type != RBRACE) {
-			body.push_back(parse_stmt());
-			NodeType st = body[0]->get_type();
+			body->push_back(parse_stmt());
+			NodeType st = (*body)[0]->get_ntype();
 			if (st == FUNC)
 				m_assert(0, "Invalid Statment");
 		}
 
 		expect(RBRACE, "Missing }");
-		return new ForStmt(init, cond, next,body);
+		Node* r = new Node();
+		r->type = NodeType::FOR;
+		r->l = body;
+		r->right = conf; 
+
+		return r;
 	}
 	case WHILE_KEY: {
 		next();
-		Expression* cond = NULL;
-		std::vector<Stmt*> body;
+		Node* cond = new Node();
+		std::vector<Node*> *body = new std::vector<Node*>();
 
 		expect(LPAREN, "Missing (");
 		cond = parse_expr();
@@ -538,17 +571,21 @@ Node* Parser::parse_stmt() {
 		expect(LBRACE, "Missing {");
 
 		while (tok.type != RBRACE) {
-			body.push_back(parse_stmt());
-			NodeType st = body[0]->get_type();
+			body->push_back(parse_stmt());
+			NodeType st = (*body->back()).get_ntype();
 			if (st == FUNC)
 				m_assert(0, "Invalid Statment");
 		}
 
 		expect(RBRACE, "Missing }");
+		Node* r = new Node();
+		r->type = NodeType::WHILE;
+		r->l = body;
+		r->mid = cond;
 
-		return new WhileStmt(cond, body);
+		return r;
 	}
-	case CONTINUE_KEY:
+	/*case CONTINUE_KEY:
 	case BREAK_KEY: {
 		Expression* e = new Expression();
 		e->etype = tok.type;
@@ -556,12 +593,10 @@ Node* Parser::parse_stmt() {
 		expect(SEMICOLON, "Missing ;");
 		return e;
 	}
-	
+	*/
 	default:
 		
 		std::cout << "[parse_stmt] invalid token" << std::endl;
 		exit(1);
 	}
 }
-
-*/

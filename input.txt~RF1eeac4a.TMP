@@ -1,0 +1,4 @@
+func foo(a,b) {
+	let a = 20;
+	let b = a + 2;
+}
