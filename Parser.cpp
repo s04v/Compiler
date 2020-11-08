@@ -62,21 +62,25 @@ Node* Parser::parse_operand() {
 			next();
 
 			if (tok.type != RPAREN) { 
-				Node** args = new Node*[8]();
+//				Node** args = new Node*[8]();
+				std::vector<Node*> *args = new std::vector<Node*>();
+
 				int i = 0;
 				do
 				{
 					if (tok.type == COMMA)
 						next();
 
-					args[i++] = parse_expr();
+					args->push_back(parse_expr());
+
 				} while (tok.type == COMMA && i < 8);
 
 				expect(RPAREN);
 				Node* r = new Node();
 				r->type = NodeType::FUNC_CALL;
 				r->val = name;
-				r->mid = *args;
+				r->l = args;
+				//r->mid = *args;
 				return r;
 			} 
 			Node* r = new Node();
@@ -466,7 +470,7 @@ Node* Parser::parse_stmt() {
 
 			while (tok.type != RBRACE) {
 				body->push_back(parse_stmt());
-				NodeType st = (*body)[0]->get_ntype();
+				NodeType st = (*body->back()).get_ntype();
 				if (st == FUNC)
 					m_assert(0, "Invalid Statment");
 			}
@@ -477,7 +481,18 @@ Node* Parser::parse_stmt() {
 			//return new Func(FUNC_DEF, name, args, body);
 			return r;
 		}
+
+		m_assert(0,"Missing semicolon!");
+
 		
+	}
+	case RETURN_KEY: {
+		Node* e = new Node();
+		e->type = NodeType::RETURN;
+		e->left = parse_expr();
+		//next();
+		return e;
+		break;
 	}
 	case IF_KEY: {
 		next();
@@ -492,7 +507,7 @@ Node* Parser::parse_stmt() {
 
 		while (tok.type != RBRACE) {
 			body_th->push_back(parse_stmt());
-			NodeType st = (*body_th)[0]->get_ntype();
+			NodeType st = (*body_th->back()).get_ntype();
 			if (st == FUNC)
 				m_assert(0, "Invalid Statment");
 		}
@@ -512,7 +527,7 @@ Node* Parser::parse_stmt() {
 
 		while (tok.type != RBRACE) {
 			body_el->push_back(parse_stmt());
-			NodeType st = (*body_el)[0]->get_ntype();
+			NodeType st = (*body_el->back()).get_ntype();
 			if (st == FUNC)
 				m_assert(0, "Invalid Statment");
 		}
@@ -547,7 +562,7 @@ Node* Parser::parse_stmt() {
 
 		while (tok.type != RBRACE) {
 			body->push_back(parse_stmt());
-			NodeType st = (*body)[0]->get_ntype();
+			NodeType st = (*body->back()).get_ntype();
 			if (st == FUNC)
 				m_assert(0, "Invalid Statment");
 		}
@@ -585,15 +600,14 @@ Node* Parser::parse_stmt() {
 
 		return r;
 	}
-	/*case CONTINUE_KEY:
+	case CONTINUE_KEY:
 	case BREAK_KEY: {
-		Expression* e = new Expression();
-		e->etype = tok.type;
+		Node* e = new Node();
+		e->type = (tok.type == TokenType::CONTINUE_KEY) ? NodeType::CONTINUE : NodeType::BREAK;
 		next();
 		expect(SEMICOLON, "Missing ;");
 		return e;
 	}
-	*/
 	default:
 		
 		std::cout << "[parse_stmt] invalid token" << std::endl;

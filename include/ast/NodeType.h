@@ -59,5 +59,9 @@ enum NodeType {
 	FOR,
 	WHILE,
 
+	CONTINUE,
+	BREAK,
+	RETURN,
+
 	STMT,
 };

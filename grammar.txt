@@ -40,3 +40,8 @@ operand ::= rval
 rval ::= number | float | call | lval | ' symbol ' | " string "
 lval ::=  ID | ID "[" expression "]" 
 
+
+
+KEYWORDS:
+
+let func return	if else for while continue break
