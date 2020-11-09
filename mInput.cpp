@@ -3,8 +3,9 @@
 #include <iostream>
 #include <string>
 #include <assert.h>
-char* mInput::code = 0;
 
+char* mInput::code = 0;
+//TODO: fix input bugs 
 void mInput::load_code(const char* filename) {
 	HANDLE file = CreateFileA(filename, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 	assert(file != INVALID_HANDLE_VALUE);
