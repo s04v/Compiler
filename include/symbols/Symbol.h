@@ -12,7 +12,8 @@ public:
 	SymType type;
 	std::string name;
 	std::string val;
+	short index;
 
-	Symbol(SymType t, std::string n, std::string v);
+	Symbol(SymType t, std::string n, std::string v, short i);
 
 };

@@ -17,6 +17,8 @@ public:
 	void init_scope();
 	void new_scope();
 	void back_scope();
+	//test
+	int get_index(std::string n);
 
 	void add(Symbol* s);
 	Symbol get(std::string n);

@@ -10,10 +10,12 @@ enum NodeType {
 	N_NOT_EQ,
 	N_LT, N_LTEQ,
 	N_GT, N_GTEQ,
-	
 
-	NUMBER_CONST,
-	FLOAT_CONST,
+	N_ADD, N_SUB, N_MUL, N_DIV, N_MOD,
+	N_INC, N_DEC,
+
+	NUMBER_CONST, // +
+	FLOAT_CONST, // +
 	CHAR_CONST,
 	STRING_CONST,
 	FUNC_CALL,
@@ -21,14 +23,14 @@ enum NodeType {
 	ID_NAME,
 	VAR,	
 
-	N_ADD, N_SUB, N_MUL, N_DIV, N_MOD,
-	N_INC, N_DEC,
+	
 	// stmts 
 	// var  stmt
 	VAR_STMT,
 
 	VAR_DECL,		// var a;
 	VAR_DEF,		// var a = 10;
+	
 	VAR_ASSIGN,		// a = 10
 	VAR_ASSIGN_ADD, // a += 10;
 	VAR_ASSIGN_SUB, // ...

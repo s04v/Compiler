@@ -15,8 +15,13 @@ void SymbolTable::new_scope() {
 	
 	scope.push(s);
 }
+
 void SymbolTable::back_scope() {
 	scope.pop();
+}
+
+int SymbolTable::get_index(std::string n) {
+	return get(n).index;
 }
 
 void SymbolTable::add(Symbol* s) {
@@ -36,7 +41,6 @@ Symbol SymbolTable::get(std::string n) {
 std::string SymbolTable::get_val(std::string n) {
 	return get(n).val;
 }
-
 
 bool SymbolTable::contain(std::string n) {
 	return scope.top().contain(n);

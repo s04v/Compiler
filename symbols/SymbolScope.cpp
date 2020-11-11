@@ -4,10 +4,10 @@
 #include <m_assert.h>
 
 
-SymbolScope::SymbolScope() {}
+SymbolScope::SymbolScope() { i = 0; }
 
 void SymbolScope::put(SymType t, std::string name, std::string val) {
-	Symbol s(t, name, val);
+	Symbol s(t, name, val, i++);
 	symbols.insert( std::pair<std::string, Symbol>(name, s) );
 }
 
@@ -22,4 +22,8 @@ Symbol SymbolScope::get(std::string name) {
 
 bool SymbolScope::contain(std::string name) {
 	return !(symbols.find(name) == symbols.end());
+}
+
+short SymbolScope::get_index(std::string name) {
+	return this->get(name).index;
 }
