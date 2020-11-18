@@ -12,20 +12,22 @@
 #include <symbols/SymbolTable.h>
 
 
-
+static std::string ret = "";
 class Gen {
 public:
 	
 	/*
-	0 = eax
-	1 = ebx
-	2 = ecx
-	3 = edx
+	0 = R1
+	1 = R2
 	*/
-	short reg;
-	std::string use_reg;
+
+	short use_reg;
+	short prev_reg;
+	int freereg[4] = {1, 1, 1, 1};
+	const char *reglist[8] = { "eax", "ebx", "ecx", "edx" };
+	/*std::string use_reg;
 	std::string prev_reg; 
-	
+	*/
 
 	SymbolTable st;
 
@@ -35,13 +37,24 @@ public:
 	~Gen();
 	void start(Node* node);
 
-	std::string gen_expr(Node* node);
+	int gen_expr(Node* node);
 	void gen_var(Node* node);
 
 
 	void release_reg();
 
-	void get_reg();
+	
 	void new_reg();
+	std::string get_reg(int r);
+	int alloc_register();
+	void free_register(int r);
+
+	int load_const(std::string v);
+	int gen_add(int r1, int r2);
+	int gen_mul(int r1, int r2);
+
+	int gen_sub(int r1, int r2);
+	int gen_div(int r1, int r2);
+
 };
 

@@ -1,7 +1,13 @@
-mov eax, 10
-mov ebx, 2
-add eax, ebx
+mov eax, 3
 mov ebx, 4
+mul eax, ebx
+mov ebx, 20
+sub eax, ebx
+mov ebx, 2
+mul eax, ebx
+mov ebx, 5
+mul eax, ebx
+mov ebx, 1
 add eax, ebx
-mov ebx, 23
+mov ebx, 6
 add eax, ebx
