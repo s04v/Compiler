@@ -6,8 +6,8 @@
 
 SymbolScope::SymbolScope() { i = 0; }
 
-void SymbolScope::put(SymType t, std::string name, std::string val) {
-	Symbol s(t, name, val, i++);
+void SymbolScope::put(SymType t, std::string name) {
+	Symbol s(t, name, i++);
 	symbols.insert( std::pair<std::string, Symbol>(name, s) );
 }
 

@@ -5,6 +5,7 @@
 Gen::Gen() {
 	f.open("out.asm", std::ofstream::out);
 	//reg = 0;
+	st.init_scope();
 	ret = "";
 	use_reg = 0;
 	prev_reg = 0;
@@ -13,10 +14,61 @@ Gen::Gen() {
 
 Gen::~Gen() {}
 
-void Gen::start(Node* node) {
-	gen_var(node);
-	
+void Gen::start(std::vector<Node*> p) {
+
+	for (int i = 0; i < p.size(); i++) {
+		gen_var(p[i]);
+	}
+
+	std::cout << ret;
 	f.close();
+}
+
+void Gen::release_reg() {
+	if (use_reg > 0) {
+		prev_reg = use_reg;
+		use_reg--;
+	}
+}
+
+void Gen::new_reg() {
+	prev_reg = use_reg;
+	use_reg++;
+
+	//get_reg();
+
+}
+
+int Gen::alloc_register() {
+	for (int i = 0; i < 4; i++) {
+		if (freereg[i]) {
+			freereg[i] = 0;
+			return (i);
+		}
+	}
+	return -1;
+}
+
+void Gen::free_register(int r) {
+	if (freereg[r] != 0)
+		m_assert(0, "Error trying to free register");
+
+	freereg[r] = 1;
+}
+
+std::string Gen::get_reg(int r) {
+	switch (r) {
+	case 0:
+		return "eax";
+	case 1:
+		return "ebx";
+	case 2:
+		return "ecx";
+	case 3:
+		return "edx";
+	}
+
+	return NULL;
 }
 
 int Gen::gen_expr(Node* node) {
@@ -28,9 +80,12 @@ int Gen::gen_expr(Node* node) {
 
 
 	switch (node->type) {
+	case ID_NAME: {
+		return load_var(node->val);
+	}
 	case NUMBER_CONST:
 	case FLOAT_CONST: {
-		
+		return load_const(node->val);
 		break;
 	}
 
@@ -129,69 +184,44 @@ void Gen::gen_var(Node* node) {
 	switch (node->type) {
 	case VAR_DEF: {
 		// add var to symtable 
-		 gen_expr(node->left);
+		st.add(VAR_SYM, node->val);
 		
-		 f << ret;
-		std::cout << ret;
-		//f << "mov DWORD PTR [rbp-4], " + e;
+		int r =  gen_expr(node->left);
+
+		save_var(node->val, r);
+
+		//return r;
 		break;
 	}
 	}
 }
 
-void Gen::release_reg() {
-	if(use_reg > 0){
-		prev_reg = use_reg;
-		use_reg--;
-	}
-}
-
-void Gen::new_reg() {
-	prev_reg = use_reg;
-	use_reg++;
-
-	//get_reg();
-	
-}
-
-int Gen::alloc_register() {
-	for (int i = 0; i < 4; i++) {
-		if (freereg[i]) {
-			freereg[i] = 0;
-			return (i);
-		}
-	}
-	return -1;
-}
-
-void Gen::free_register(int r) {
-	if (freereg[r] != 0)
-		m_assert(0, "Error trying to free register");
-
-	freereg[r] = 1;
-}
-
-std::string Gen::get_reg(int r) {
-	switch (r) {
-	case 0:
-		return "eax";
-	case 1:
-		return "ebx";
-	case 2:
-		return "ecx";
-	case 3:
-		return "edx";
-	}
-
-	return NULL;
-}
 
 int Gen::load_const(std::string v) {
 	int r = alloc_register();
 	ret += "mov " + get_reg(r) + ", " + v + "\n";
 
 	return r;
-;}
+}
+
+int Gen::load_var(std::string n) {
+	int r = alloc_register();
+	Symbol v = st.get(n);
+	ret += "mov " + get_reg(r) + ", DWORD PTR [rbp -" + std::to_string((v.index + 1) * 4) + "]\n";
+
+	return r;
+}
+int Gen::save_var(std::string n, int r) {
+
+	Symbol v = st.get(n);
+	ret += "mov DWORD PTR [rbp - " + std::to_string((v.index + 1)  * 4) + "], " + get_reg(r) + "\n";
+
+	free_register(r);
+	//TODO: delete
+	return -1;
+}
+
+
 
 int Gen::gen_add(int r1, int r2) {
 	ret += "add " + get_reg(r1) + ", " + get_reg(r2) + "\n";

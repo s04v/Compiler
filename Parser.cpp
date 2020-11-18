@@ -13,6 +13,7 @@ Parser::Parser() {}
 
 void Parser::next() {
 	tok = tokens[i_tok++];
+	
 }
 
 void Parser::save() {

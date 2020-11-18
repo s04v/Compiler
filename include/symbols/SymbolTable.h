@@ -20,9 +20,9 @@ public:
 	//test
 	int get_index(std::string n);
 
-	void add(Symbol* s);
+	void add(SymType t, std::string n);
 	Symbol get(std::string n);
-	std::string get_val(std::string n);
+
 
 	bool contain(std::string n);
 

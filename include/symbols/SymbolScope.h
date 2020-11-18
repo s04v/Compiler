@@ -11,7 +11,7 @@ public:
 
 	SymbolScope();
 
-	void put(SymType t, std::string name, std::string val);
+	void put(SymType t, std::string name);
 	Symbol get(std::string name);
 	bool contain(std::string name);
 

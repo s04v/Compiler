@@ -24,9 +24,9 @@ int SymbolTable::get_index(std::string n) {
 	return get(n).index;
 }
 
-void SymbolTable::add(Symbol* s) {
-	if (!contain(s->name)) {
-		scope.top().put(s->type, s->name, s->val);
+void SymbolTable::add(SymType t, std::string n) {
+	if (!contain(n)) {
+		scope.top().put(t, n);
 		return;
 	}
 	m_assert(0, "Symbol exists");
@@ -38,9 +38,7 @@ Symbol SymbolTable::get(std::string n) {
 	m_assert(0, "Symbol does not exists");
 }
 
-std::string SymbolTable::get_val(std::string n) {
-	return get(n).val;
-}
+
 
 bool SymbolTable::contain(std::string n) {
 	return scope.top().contain(n);

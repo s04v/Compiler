@@ -40,13 +40,15 @@ int main() {
 	p.next();
 	
 
-	
-	Node* e = p.parse_stmt();
+	std::vector<Node*> program;
+	program.push_back(p.parse_stmt());
+	program.push_back(p.parse_stmt());
 
 
 	//compiler
 	Gen g;
-	g.start(e);
+	g.start(program);
+
 
 
 

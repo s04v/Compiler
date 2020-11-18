@@ -35,7 +35,7 @@ public:
 
 	Gen();
 	~Gen();
-	void start(Node* node);
+	void start(std::vector<Node*> p);
 
 	int gen_expr(Node* node);
 	void gen_var(Node* node);
@@ -50,6 +50,9 @@ public:
 	void free_register(int r);
 
 	int load_const(std::string v);
+	int load_var(std::string n);
+	int save_var(std::string n, int r);
+
 	int gen_add(int r1, int r2);
 	int gen_mul(int r1, int r2);
 
