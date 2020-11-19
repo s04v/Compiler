@@ -9,11 +9,11 @@
 
 
 class Parser {
+public:
 	unsigned long long  i_tok = 0;
 	unsigned long long  s_tok = 0;
 
 	Token tok;
-public:
 	
 	std::vector<Token> tokens;
 

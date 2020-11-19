@@ -28,7 +28,7 @@ enum NodeType {
 	// var  stmt
 	VAR_STMT,
 
-	VAR_DECL,		// var a;
+	VAR_DECL,		// var a; // TODO: delete this
 	VAR_DEF,		// var a = 10;
 	
 	VAR_ASSIGN,		// a = 10

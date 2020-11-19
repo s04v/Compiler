@@ -41,8 +41,8 @@ int main() {
 	
 
 	std::vector<Node*> program;
-	program.push_back(p.parse_stmt());
-	program.push_back(p.parse_stmt());
+	while(p.tokens.size() > p.i_tok)
+		program.push_back(p.parse_stmt());
 
 
 	//compiler

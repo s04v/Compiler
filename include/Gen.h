@@ -35,24 +35,27 @@ public:
 
 	Gen();
 	~Gen();
-	void start(std::vector<Node*> p);
 
-	int gen_expr(Node* node);
-	void gen_var(Node* node);
-
-
-	void release_reg();
 
 	
 	void new_reg();
 	std::string get_reg(int r);
 	int alloc_register();
 	void free_register(int r);
+	void release_reg();
+
+
+	void start(std::vector<Node*> p);
+
+	void gen_if(Node* node);
+	int gen_expr(Node* node);
+	void gen_var(Node* node);
+
 
 	int load_const(std::string v);
 	int load_var(std::string n);
 	int save_var(std::string n, int r);
-
+	int gen_compare(int r1, int r2);
 	int gen_add(int r1, int r2);
 	int gen_mul(int r1, int r2);
 

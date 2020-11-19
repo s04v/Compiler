@@ -14,15 +14,6 @@ Gen::Gen() {
 
 Gen::~Gen() {}
 
-void Gen::start(std::vector<Node*> p) {
-
-	for (int i = 0; i < p.size(); i++) {
-		gen_var(p[i]);
-	}
-
-	std::cout << ret;
-	f.close();
-}
 
 void Gen::release_reg() {
 	if (use_reg > 0) {
@@ -69,6 +60,70 @@ std::string Gen::get_reg(int r) {
 	}
 
 	return NULL;
+}
+
+
+
+void Gen::start(std::vector<Node*> p) {
+
+	for (int i = 0; i < p.size(); i++) {
+		gen_var(p[i]);
+	}
+	f << ret;
+	std::cout << ret;
+	f.close();
+}
+
+void Gen::gen_if(Node* node) {
+
+}
+
+void Gen::gen_var(Node* node) {
+	switch (node->type) {
+	case VAR_DEF: {
+		st.add(VAR_SYM, node->val);
+
+		int r = gen_expr(node->left);
+
+		save_var(node->val, r);
+		break;
+	}
+	case VAR_ASSIGN: {
+		int r = gen_expr(node->left);
+
+		save_var(node->val, r);
+		break;
+	}
+	case VAR_ASSIGN_ADD: 
+	case VAR_ASSIGN_SUB:
+	case VAR_ASSIGN_MUL:
+	case VAR_ASSIGN_DIV:
+	case VAR_ASSIGN_MOD: {
+		int r1 = load_var(node->val); 
+		int r2 = gen_expr(node->left);
+
+		switch (node->type) {
+		case VAR_ASSIGN_ADD:
+			gen_add(r1, r2);
+			break;
+		case VAR_ASSIGN_SUB:
+			gen_sub(r1, r2);
+			break;
+		case VAR_ASSIGN_MUL:
+			gen_mul(r1, r2);
+			break;
+		case VAR_ASSIGN_DIV:
+			gen_div(r1, r2);
+			break;
+			//TODO:
+		//case VAR_ASSIGN_MOD:
+			//gen_mod(r1, r2);
+		}
+
+		break;
+	}
+	
+	}
 }
 
 int Gen::gen_expr(Node* node) {
@@ -180,23 +235,6 @@ int Gen::gen_expr(Node* node) {
 	return -2; 
 }
 
-void Gen::gen_var(Node* node) {
-	switch (node->type) {
-	case VAR_DEF: {
-		// add var to symtable 
-		st.add(VAR_SYM, node->val);
-		
-		int r =  gen_expr(node->left);
-
-		save_var(node->val, r);
-
-		//return r;
-		break;
-	}
-	}
-}
-
-
 int Gen::load_const(std::string v) {
 	int r = alloc_register();
 	ret += "mov " + get_reg(r) + ", " + v + "\n";
@@ -211,6 +249,7 @@ int Gen::load_var(std::string n) {
 
 	return r;
 }
+
 int Gen::save_var(std::string n, int r) {
 
 	Symbol v = st.get(n);
@@ -221,6 +260,9 @@ int Gen::save_var(std::string n, int r) {
 	return -1;
 }
 
+int Gen::gen_compare(int r1, int r2) {
+
+}
 
 
 int Gen::gen_add(int r1, int r2) {
@@ -243,6 +285,7 @@ int Gen::gen_sub(int r1, int r2) {
 	free_register(r2);
 	return r1;
 }
+
 int Gen::gen_div(int r1, int r2) {
 	ret += "div " + get_reg(r1) + ", " + get_reg(r2) + "\n";
 

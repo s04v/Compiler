@@ -18,6 +18,6 @@ void mInput::load_code(const char* filename) {
 	mInput::code = file_memory;
 
 	std::cout << "finish load code!\n";
-	std::cout << mInput::code;
+	std::cout << mInput::code << std::endl;
 
 }
